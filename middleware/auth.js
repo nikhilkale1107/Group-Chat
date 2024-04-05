@@ -1,8 +1,10 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const authenticateToken = (req, res, next) => {
-  const token = req.headers["Authorization"];
+const Authenticate = (req, res, next) => {
+  const token = req.headers["authentication"];
+  console.log(token);
+
   if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, process.env.TOKEN_SECRET, async (err, jwtData) => {
@@ -14,4 +16,4 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-module.exports = authenticateToken;
+module.exports = Authenticate;

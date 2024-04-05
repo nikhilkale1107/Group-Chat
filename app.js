@@ -12,6 +12,7 @@ const PORT = 3000;
 
 //Importing Routes
 const userRouter = require("./routes/user");
+const chatRouter = require("./routes/chat");
 
 //Middlewares
 app.use(
@@ -23,6 +24,15 @@ app.use(bodyParser.json());
 
 //Routes
 app.use("/user", userRouter);
+app.use("/chat", chatRouter);
+
+//Importing Routes for Relationships
+const User = require("./models/user");
+const Chat = require("./models/chat");
+
+//Relationships
+User.hasMany(Chat);
+Chat.belongsTo(User);
 
 sequelize
   .sync({ force: false })

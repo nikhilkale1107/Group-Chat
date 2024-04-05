@@ -17,8 +17,9 @@ const brand = document.getElementById("brand");
 const header = document.querySelector(".header");
 
 if (!token) {
-  window.location.href = "../../login//login.html";
+  window.location.href = "../../login/login.html";
 }
+
 const currentUser = parseJwt(token);
 
 logout.addEventListener("click", () => {
@@ -28,7 +29,7 @@ logout.addEventListener("click", () => {
   localStorage.removeItem("messages");
   localStorage.removeItem("newGroupName");
   localStorage.removeItem("currentGpName");
-  window.location.href = "../login//login.html";
+  window.location.href = "../login/login.html";
 });
 
 newGroup.addEventListener("click", () => {
@@ -259,4 +260,3 @@ brand.addEventListener("click", () => {
   getChats();
   form.style.display = "none";
 });
-// setInterval(getChats, 1000);

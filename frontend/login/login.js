@@ -34,7 +34,7 @@ const loginHandler = async (e) => {
       messageHandler(data.message, "success");
       console.log(data);
       localStorage.setItem("token", data.token);
-      window.location.href = "../../chat/chat.html";
+      window.location.href = "../chat/chat.html";
     } catch (err) {
       if (err.response.status === 401) {
         messageHandler("Password do not match. Try again", "error");
