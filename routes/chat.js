@@ -8,4 +8,6 @@ const Authenticate = require("../middleware/auth");
 
 router.post("/", Authenticate, chatController.postChat);
 
+router.get("/", Authenticate, chatController.getChat);
+
 module.exports = router;
