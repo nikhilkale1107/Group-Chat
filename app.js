@@ -15,6 +15,7 @@ const userRouter = require("./routes/user");
 const chatRouter = require("./routes/chat");
 const newGroupRouter = require("./routes/new-group");
 const groupRouter = require("./routes/group");
+const adminRouter = require("./routes/admin");
 
 //Middlewares
 app.use(
@@ -29,11 +30,13 @@ app.use("/user", userRouter);
 app.use("/chat", chatRouter);
 app.use("/new-group", newGroupRouter);
 app.use("/groups", groupRouter);
+app.use("/admin", adminRouter);
 
 //Importing Models for Relationships
 const User = require("./models/user");
 const Chat = require("./models/chat");
 const GroupChat = require("./models/groupchat");
+const Admin = require("./models/admin");
 
 
 //Relationships
@@ -45,6 +48,9 @@ Chat.belongsTo(GroupChat);
 
 User.belongsToMany(GroupChat, { through: "usergroup" });
 GroupChat.belongsToMany(User, { through: "usergroup" });
+
+GroupChat.hasMany(Admin);
+User.hasMany(Admin);
 
 sequelize
   .sync({ force: false })

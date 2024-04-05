@@ -248,7 +248,7 @@ settings.addEventListener("click", () => {
   const gpName = localStorage.getItem("currentGpName");
   localStorage.setItem("newGroupId", gpId);
   localStorage.setItem("newGroupName", gpName);
-  window.location.href = "./editgroup/edit-group.html";
+  window.location.href = "../editgroup/editgroup.html";
 });
 
 brand.addEventListener("click", () => {

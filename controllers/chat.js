@@ -1,5 +1,6 @@
 const Chat = require("../models/chat");
 const User = require("../models/user");
+const Admin = require("../models/admin");
 const { Op } = require("sequelize");
 
 exports.postChat = async (req, res, next) => {
@@ -37,10 +38,18 @@ exports.getChat = async (req, res, next) => {
         },
       ],
     });
+    const adminRecord = await Admin.findAll({
+      where: {
+        userId: req.user.id,
+        groupchatId: gpId,
+      },
+    });
+    const isAdmin = adminRecord.length !== 0;
     console.log(chats)
     res.json({
       success: true,
       chats: chats,
+      isAdmin: isAdmin,
     });
   } catch (err) {
     console.log(err);

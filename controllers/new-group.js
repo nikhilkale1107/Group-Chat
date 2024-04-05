@@ -1,5 +1,6 @@
 const GroupChat = require("../models/groupchat");
 const User = require("../models/user");
+const Admin = require("../models/admin");
 
 exports.postNewGroup = async (req, res, next) => {
   const { groupName } = req.body;
@@ -11,6 +12,27 @@ exports.postNewGroup = async (req, res, next) => {
     res.status(201).json({
       gp: gpChat,
     });
+    await gpChat.createAdmin({
+      userId: req.user.id,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.postUpdateGroup = async (req, res, next) => {
+  const { groupName } = req.body;
+  const gpId = req.query.gpId;
+  try {
+    const response = await GroupChat.update(
+      {
+        name: groupName,
+      },
+      { where: { id: gpId } }
+    );
+    res.json({
+      success: true,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -19,7 +41,7 @@ exports.postNewGroup = async (req, res, next) => {
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.findAll({
-      attributes: ["id", "userName"],
+      attributes: ["id", "userName", "email", "phone"],
     });
     res.json({
       users: users,
@@ -35,7 +57,6 @@ exports.getUsers = async (req, res, next) => {
 exports.addUserToGroup = async (req, res, next) => {
   const userId = req.query.userId;
   const gpId = req.query.gpId;
-  console.log(userId);
   try {
     const group = await GroupChat.findByPk(gpId);
     await group.addUser(userId);

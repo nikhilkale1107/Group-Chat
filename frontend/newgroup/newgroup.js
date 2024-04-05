@@ -12,7 +12,7 @@ const saveBtn = document.getElementById("save");
 
 logout.addEventListener("click", () => {
   localStorage.removeItem("token");
-  window.location.href = "./login/login.html";
+  window.location.href = "../login/login.html";
 });
 
 if (!token) {
@@ -53,7 +53,7 @@ const openGroupChat = (e) => {
   localStorage.setItem("currentGpName", gpName);
   localStorage.setItem("messages", JSON.stringify([]));
   // getChats();
-  window.location.href = "../chat.html";
+  window.location.href = "../chat/chat.html";
   menuBtn.click();
 };
 
@@ -186,7 +186,7 @@ saveBtn.addEventListener("click", () => {
   localStorage.setItem("currentGpName", gpName);
   localStorage.setItem("messages", JSON.stringify([]));
   // getChats();
-  window.location.href = "../chat.html";
+  window.location.href = "../chat/chat.html";
 });
 
 form.addEventListener("submit", submitHandler);
