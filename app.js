@@ -13,7 +13,7 @@ const PORT = 3000;
 //Importing Routes
 const userRouter = require("./routes/user");
 const chatRouter = require("./routes/chat");
-const newGroupRouter = require("./routes/new-group");
+const newGroupRouter = require("./routes/newgroup");
 const groupRouter = require("./routes/group");
 const adminRouter = require("./routes/admin");
 

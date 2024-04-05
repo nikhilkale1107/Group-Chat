@@ -30,7 +30,7 @@ exports.getChat = async (req, res, next) => {
   console.log(lastMsgId);
   try {
     const chats = await Chat.findAll({
-      where: { id: { [Op.gt]: lastMsgId, groupchatId: gpId } },
+      where: { id: { [Op.gt]: lastMsgId }, groupchatId: gpId },
       include: [
         {
           model: User,

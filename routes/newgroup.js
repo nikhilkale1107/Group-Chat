@@ -4,7 +4,7 @@ const router = express.Router();
 
 const Authenticate = require("../middleware/auth");
 
-const groupChatController = require("../controllers/new-group");
+const groupChatController = require("../controllers/newgroup");
 
 router.post("/", Authenticate, groupChatController.postNewGroup);
 
