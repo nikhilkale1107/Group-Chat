@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat App</title>
+    <title>Mchat App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous"/>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,54 +16,36 @@
   <body>
     <main>
       <p id="menu">
-        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#user-container" id="menu-btn">
+        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#user-container">
           <span class="material-symbols-outlined"> menu </span>
         </button>
       </p>
       <div id="user-container" class="collapse collapse-horizontal rounded">
         <div id="collapse-div" style="width: 300px">
-          <h2 class="heading" id="brand">Chat App</h2>
-          <button class="btn" id="newgroup">New Group</button>
-          <button class="btn btn-danger" id="logout">Logout</button>
+          <h2 class="heading" class="rounded">Chat App</h2>
           <ul class="list-group" id="group-list"></ul>
         </div>
+        <div><button class="btn btn-danger" id="logout">Logout</button></div>
       </div>
 
-      <div class="container rounded w-100" id="chat-body">
-        <div id="chat-container">
-          <div class="header">
-            <h4 class="user-profile" id="profile"></h4>
-            <button class="btn" id="settings">Settings</button>
-            <div>
-              <button class="btn" id="info">Info</button>
-              <div class="container rounded" id="info-div">
-                <h3 id="member-count-heading">
-                  Members: <span id="member-count"></span>
-                </h3>
-                <ul class="list-group" id="members-list"></ul>
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div id="message-container">
-            <table class="table table-borderless">
-              <tbody id="table-body"></tbody>
-            </table>
-          </div>
-          <div class="form-container">
-            <div class="message-send">
-              <form method="POST" id="send-message">
-                <input type="text" class="form-control" name="message" />
-                <button type="submit" class="btn send-btn">
-                  <span class="material-symbols-rounded"> send </span>
-                </button>
-              </form>
-            </div>
-          </div>
+      <div class="container rounded shadow-sm w-100" id="groupwindow">
+        <div id="group-form">
+          <h3 class="heading">New Group</h3>
+          <p class="" id="message">test</p>
+          <form action="" id="groupDetailsForm">
+            <label for="groupName" class="form-label">Group Name:</label>
+            <input type="text" name="groupName" class="form-control" />
+            <input type="submit" value="Next" class="btn" />
+          </form>
+        </div>
+        <div class="" id="users-model">
+          <h3 class="heading">Select Users</h3>
+          <ul class="list-group" id="user-list"></ul>
+          <div><button class="btn" id="save">Save</button></div>
         </div>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="./chat.js"></script>
+    <script src="./newgroup.js"></script>
   </body>
 </html>

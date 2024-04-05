@@ -33,7 +33,7 @@ logout.addEventListener("click", () => {
 });
 
 newGroup.addEventListener("click", () => {
-  window.location.href = "../newgroup/new-group.html";
+  window.location.href = "../newgroup/newgroup.html";
 });
 
 function parseJwt(token) {
