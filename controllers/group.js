@@ -52,7 +52,7 @@ exports.getMembers = async (req, res, next) => {
       const adminUserIds = groupAdminMembers.users.map((user) => {
         return user.id;
       });
-      console.log(adminUserIds);
+      // console.log(adminUserIds);
       // find all the other members
       const groupOtherMembers = await GroupChat.findOne({
         where: { id: gpId },
@@ -109,7 +109,7 @@ exports.getMembers = async (req, res, next) => {
         where: { id: { [Op.notIn]: members } },
         attributes: ["id", [Sequelize.col("userName"), "name"]],
       });
-      console.log(users);
+      // console.log(users);
       res.json({
         users: users,
       });

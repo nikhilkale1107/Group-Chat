@@ -18,7 +18,7 @@ exports.postNewUser = async (req, res, next) => {
     }
     bcrypt.hash(password, 10, async (err, hash) => {
       console.log(err);
-      console.log("hash", hash);
+      // console.log("hash", hash);
       const user = await User.create({
         userName: userName,
         email: email,
@@ -40,7 +40,7 @@ exports.postLoginUser = async (req, res, next) => {
     console.log(req.body);
     try {
       const user = await User.findAll({ where: { email: email } });
-      console.log(user);
+      // console.log(user);
       if (user.length === 0) {
         return res.status(404).json({
           message: "User not found",

@@ -6,7 +6,7 @@ const { Op } = require("sequelize");
 exports.postChat = async (req, res, next) => {
   const { msg } = req.body;
   const gpId = req.query.gpId;
-  console.log(gpId);
+  // console.log(gpId);
   try {
     const chat = await req.user.createChat({
       message: msg,
@@ -26,8 +26,8 @@ exports.postChat = async (req, res, next) => {
 exports.getChat = async (req, res, next) => {
   const lastMsgId = req.query.lastMsgId;
   const gpId = req.query.gpId;
-  console.log(gpId);
-  console.log(lastMsgId);
+  // console.log(gpId);
+  // console.log(lastMsgId);
   try {
     const chats = await Chat.findAll({
       where: { id: { [Op.gt]: lastMsgId }, groupchatId: gpId },
