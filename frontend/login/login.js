@@ -4,9 +4,9 @@ const loginForm = document.getElementById("loginForm");
 const msg = document.getElementById("message");
 const token = localStorage.getItem("token");
 
-if (token) {
-  window.location.href = "../chat.html";
-}
+// if (token) {
+//   window.location.href = "../chat.html";
+// }
 
 const messageHandler = (message, type) => {
   msg.innerText = message;

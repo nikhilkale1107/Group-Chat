@@ -1,4 +1,5 @@
 const baseUrl = "http://localhost:3000";
+// const socket = io('http://localhost:4000')
 const form = document.getElementById("send-message");
 const token = localStorage.getItem("token");
 const profile = document.getElementById("profile");
@@ -260,3 +261,5 @@ brand.addEventListener("click", () => {
   getChats();
   form.style.display = "none";
 });
+
+// setInterval(getChats, 1000);
