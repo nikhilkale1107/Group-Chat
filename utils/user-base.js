@@ -9,3 +9,18 @@ exports.getUserDetails = async (id, message) => {
     message: message,
   };
 };
+
+exports.addOnlineUsers = (id, userName) => {
+    onlineUsers.push({
+      id: id,
+      userName: userName,
+    });
+  };
+  
+  exports.getOnlineUsers = () => {
+    return onlineUsers;
+  };
+  
+  exports.deleteOnlineUsers = (id) => {
+    onlineUsers = onlineUsers.filter((user) => user.id !== id);
+  };

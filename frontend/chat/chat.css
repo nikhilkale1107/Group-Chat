@@ -58,10 +58,15 @@
     width: 100%;
     margin-left: 1rem;
   }
+
+  #table-body {
+    padding-left: 0;
+    margin: 0;
+  }
   
   #message-container {
-    height: 80%;
-    overflow-y: auto;
+    height: 75%;
+    overflow-y: scroll;
   }
   
   #chat-body {
@@ -75,9 +80,24 @@
     width: 100%;
     display: flex;
   }
+
+  .botName {
+    color: #0171cd;
+  }
+  
+  .botDiv {
+    text-align: center;
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+  
+  .botMessage {
+    color: #778899;
+  }
   
   .message-send {
     position: absolute;
+    display: flex;
     bottom: 10px;
     left: 7%;
     width: 90%;
@@ -86,7 +106,7 @@
   .message-send input {
     display: inline;
     width: 90%;
-    height: 10%;
+    height: 80%;
     border: 2px solid #0171cd;
   }
   
@@ -97,6 +117,19 @@
     margin-top: 0;
     margin-left: 4px;
   }
+
+  
+#file {
+  display: none;
+}
+
+.attach-pin {
+  cursor: pointer;
+  background-color: #0171cd;
+  color: #ffffff;
+  padding: 5px;
+  border-radius: 10px;
+}
   
   .message-send span {
     font-weight: 500;
@@ -110,20 +143,32 @@
     padding: 5px;
   }
   
-  td {
-    width: 50%;
-  }
-  
-  .right td {
-    text-align: right;
+  .you-list {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 5px;
   }
   
   .you {
     background-color: #0171cd;
     color: #ffffff;
-    width: fit-content;
     margin-top: 1%;
     padding: 5px;
+  }
+
+  .spanName {
+    display: block;
+    font-size: 0.8rem;
+    color: #0171cd;
+  }
+  
+  .you img {
+    margin-right: 0;
+  }
+  
+  .chat-image img {
+    width: 225px;
+    border-radius: 10px;
   }
   
   /* Mobile View */
@@ -131,6 +176,19 @@
   @media (max-width: 900px) {
     #info-div {
       width: 60%;
+    }
+    .message-send input {
+      width: 70%;
+      height: 60%;
+  }
+  .attach-pin {
+    height: fit-content;
+    }
+    .message-send button {
+      width: fit-content;
+      height: 35px;
+      margin-top: 10px;
+      
     }
     .send-btn {
       width: 20%;
@@ -144,9 +202,11 @@
       width: fit-content;
     }
     #chat-body {
-      display: block;
-      width: 80vw;
-      margin-top: 0;
+      display: flex;
+      width: 90vw;
+      height: 85vh;
+      margin: 0;
+      padding: 16px;
     }
   
     #settings {

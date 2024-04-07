@@ -7,6 +7,7 @@ const tableBody = document.getElementById("table-body");
 const logout = document.getElementById("logout");
 const newGroup = document.getElementById("newgroup");
 const groupList = document.getElementById("group-list");
+const onlineList = document.getElementById("online-list");
 const menuBtn = document.getElementById("menu-btn");
 const messageContainer = document.getElementById("message-container");
 const info = document.getElementById("info");
@@ -16,6 +17,7 @@ const membersList = document.getElementById("members-list");
 const settings = document.getElementById("settings");
 const brand = document.getElementById("brand");
 const header = document.querySelector(".header");
+const fileInput = document.getElementById("file");
 
 if (!token) {
   window.location.href = "../../login/login.html";
@@ -56,36 +58,61 @@ function parseJwt(token) {
 const displayChats = (chat) => {
   const { message, userId, userName } = chat;
   const currentUser = parseJwt(token);
-  const trow = document.createElement("tr");
-  if (currentUser.id === userId) {
-    trow.className = "right";
-    trow.innerHTML = `<td></td>
-                  <td>
-                    <span class="you rounded shadow-sm">${message}</span>
-                  </td>
-    `;
+  const li = document.createElement("li");
+  let formattedMessage;
+  if (message.includes("https://")) {
+    formattedMessage = `<div class="chat-image">
+                          <img src=${message} alt="image" />
+                        </div>`;
   } else {
-    trow.innerHTML = `<td>
-                    <span class="others rounded shadow-sm">${userName}: ${message}</span>
-                  </td>
-                  <td></td>
-  `;
+    formattedMessage = message;
   }
-  tableBody.appendChild(trow);
+  if (currentUser.id === userId) {
+    li.className = "list-group-item you-list";
+    li.innerHTML = `<div class="rounded shadow-sm you">
+                      ${formattedMessage}
+                    </div>`;
+  } else if (userId == -1) {
+    li.className = "list-group-item";
+    li.innerHTML = `<div class="botDiv">
+                      <span class="spanName botName">${userName}:</span>
+                      <span class="botMessage">${formattedMessage}</span>
+                    </div>`;
+  } else {
+    li.className = "list-group-item";
+    li.innerHTML = `<div class="others rounded shadow-sm">
+    <span class="spanMessage">${formattedMessage}</span>
+                    </div>`;
+  }
+  tableBody.appendChild(li);
 };
 
-const openGroupChat = (e) => {
+const openGroupChat = async (e) => {
+  const currentGpId = localStorage.getItem("currentGpId");
+  socket.emit("leaveRoom", {
+    userId: currentUser.id,
+    gpId: currentGpId,
+    userName: currentUser.userName,
+  });
   const gpId = e.target.id;
   const gpName = e.target.innerText;
   localStorage.setItem("currentGpId", gpId);
   localStorage.setItem("currentGpName", gpName);
   profile.replaceChildren();
   profile.appendChild(document.createTextNode(gpName));
-  localStorage.setItem("messages", JSON.stringify([]));
+  // localStorage.setItem("messages", JSON.stringify([]));
   header.style.display = "flex";
-  getChats();
-  getMembers();
+  // getChats();
+  // getMembers();
   menuBtn.click();
+  getMembers();
+  await getChats();
+  socket.emit("joinRoom", {
+    userId: currentUser.id,
+    gpId: gpId,
+    userName: currentUser.userName,
+  });
+
 };
 
 const displayGroups = (group) => {
@@ -112,13 +139,18 @@ const getGroups = async () => {
 const getChats = async () => {
   tableBody.replaceChildren();
   const gpId = localStorage.getItem("currentGpId");
-  socket.emit("joinRoom", { userId: currentUser.id, gpId: gpId });
   if (gpId) {
     header.style.display = "flex";
     form.style.display = "block";
     let localMessages = JSON.parse(localStorage.getItem("messages"));
-    const lastMsgId = localMessages.length
-      ? localMessages[localMessages.length - 1].id
+    let gpMessages;
+    if (localMessages && localMessages[gpId]) {
+      gpMessages = localMessages[gpId];
+    } else {
+      gpMessages = [];
+    }
+    const lastMsgId = gpMessages.length
+      ? gpMessages[gpMessages.length - 1].id
       : -1;
     try {
       const response = await axios.get(
@@ -128,16 +160,16 @@ const getChats = async () => {
         }
       );
       const chats = response.data.chats;
-      if (localMessages) {
-        localMessages = [...localMessages, ...chats];
+      if (gpMessages) {
+        gpMessages = [...gpMessages, ...chats];
       } else {
-        localMessages = [...chats];
+        gpMessages = [...chats];
       }
-      if (localMessages.length) {
-        while (localMessages.length > 10) {
-          localMessages.shift();
+      if (gpMessages.length) {
+        while (gpMessages.length > 10) {
+          gpMessages.shift();
         }
-        localMessages.forEach((chat) => {
+        gpMessages.forEach((chat) => {
           displayChats({
             userId: chat.userId,
             message: chat.message,
@@ -145,10 +177,8 @@ const getChats = async () => {
             userName: chat.user.userName,
           });
         });
+        localMessages[gpId] = gpMessages;
         localStorage.setItem("messages", JSON.stringify(localMessages));
-      } else {
-        tableBody.innerHTML = `
-    <tr><td><h3 style="text-align: center">No Messages</h3></td></tr>`;
       }
     } catch (err) {
       console.log(err);
@@ -156,16 +186,26 @@ const getChats = async () => {
   } else {
     tableBody.innerHTML = `
     <tr><td><h1 class='heading'>Welcome to Chat App</h1></td></tr>
-    <tr><td><h3 style="text-align: center">select a group to view messages</h3></td></tr>`;
+    <tr><td><h3 style="text-align: center">Chat in groups or in private</h3></td></tr>`;
   }
 };
 
-const onLoad = () => {
+const onLoad = async () => {
   const gpName = localStorage.getItem("currentGpName");
+  const gpId = localStorage.getItem("currentGpId");
   profile.replaceChildren(gpName);
   header.style.display = "none";
-  getChats();
+  if (gpId) {
+    getMembers();
+  }
   getGroups();
+  // getOnlineUsers();
+  await getChats();
+  socket.emit("joinRoom", {
+    userId: currentUser.id,
+    gpId: gpId,
+    userName: currentUser.userName,
+  });
 };
 
 window.addEventListener("DOMContentLoaded", onLoad);
@@ -252,7 +292,7 @@ settings.addEventListener("click", () => {
 
 brand.addEventListener("click", () => {
   header.style.display = "none";
-  localStorage.setItem("messages", []);
+  // localStorage.setItem("messages", []);
   localStorage.removeItem("currentGpId");
   localStorage.removeItem("currentGpName");
   menuBtn.click();
@@ -260,6 +300,37 @@ brand.addEventListener("click", () => {
   form.style.display = "none";
 });
 // setInterval(getChats, 1000);
+
+// function uploadFile(files) {
+//   console.log(files[0]);
+//   socket.emit("upload", files[0]);
+// }
+fileInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  const gpId = localStorage.getItem("currentGpId");
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // Create a JSON object containing the file name and the file buffer
+      const fileData = {
+        gpId: gpId,
+        userId: currentUser.id,
+        fileName: file.name,
+        fileBuffer: reader.result,
+      };
+      // Send the file data to the server through the socket
+      socket.emit("upload", fileData, (fileUrl) => {
+        displayChats({
+          userId: currentUser.id,
+          message: fileUrl,
+          userName: currentUser.userName,
+        });
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+});
+
 // SOCKET LOGIC
 // const gpId = localStorage.getItem("currentGpId");
 socket.on("message", (data) => {

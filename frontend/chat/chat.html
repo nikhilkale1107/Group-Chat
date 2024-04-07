@@ -27,6 +27,7 @@
           <h2 class="heading" id="brand">Chat App</h2>
           <button class="btn" id="newgroup">New Group</button>
           <button class="btn btn-danger" id="logout">Logout</button>
+          <h4 id="groups">Your Groups</h4>
           <ul class="list-group" id="group-list"></ul>
         </div>
       </div>
@@ -48,13 +49,20 @@
           </div>
           <hr />
           <div id="message-container">
-            <table class="table table-borderless">
+            <ul id="table-body"></ul>
+            <!-- <table class="table table-borderless">
               <tbody id="table-body"></tbody>
-            </table>
+            </table> -->
           </div>
           <div class="form-container">
             <div class="message-send">
               <form method="POST" id="send-message">
+                <label for="file">
+                  <div class="attach-pin">
+                    <span class="material-symbols-outlined"> attach_file </span>
+                  </div>
+                </label>
+                <input type="file" class="form-control" id="file" accept="image/*" />
                 <input type="text" class="form-control" name="message" />
                 <button type="submit" class="btn send-btn">
                   <span class="material-symbols-rounded"> send </span>

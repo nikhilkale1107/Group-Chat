@@ -94,35 +94,26 @@ const BOTNAME = "Chat Bot";
 
 //Run when client connects
 io.on("connection", (socket) => {
-  socket.on("joinRoom", async ({ userId, gpId }) => {
+  socket.on("joinRoom", async ({ userId, gpId, userName }) => {
     console.log("gpId", gpId);
+    console.log(`${userName} joined ${gpId}`);
     const user = await getUserDetails(userId);
     socket.join(gpId);
 
     //Welcome current User
     socket.to(gpId).emit("message", {
       userId: -1,
-      message: "Welcome to Mchat app",
+      message: "Welcome to Chat app",
       userName: BOTNAME,
       gpId: -1,
     });
 
     //Broadcast when user connects to chat
-    socket.broadcast.to(gpId).emit("message", {
+    socket.to(gpId).emit("message", {
       userId: -1,
-      message: `${user.userName} has connected to the chat`,
+      message: `${userName} has connected to the chat`,
       userName: BOTNAME,
       gpId: -1,
-    });
-
-    //Broadcast when user disconnects from chat
-    socket.on("disconnect", () => {
-      socket.to(gpId).emit("message", {
-        userId: -1,
-        message: `${user.userName} has left the chat`,
-        userName: BOTNAME,
-        gpId: -1,
-      });
     });
   });
 
@@ -133,8 +124,34 @@ io.on("connection", (socket) => {
       addChat(data.gpId, data.message, data.userId),
     ]);
     console.log(formattedData);
-    socket.broadcast.to(data.gpId).emit("message", formattedData);
+    socket.to(data.gpId).emit("message", formattedData);
   });
+
+  socket.on("upload", async (fileData, cb) => {
+    console.log("file", fileData);
+    const fileUrl = await storeMultimedia(
+      fileData.fileBuffer,
+      fileData.gpId,
+      fileData.fileName
+    );
+    console.log(fileUrl);
+    addChat(fileData.gpId, fileUrl, fileData.userId);
+    cb(fileUrl);
+  });
+
+   //Leaving the room
+   socket.on("leaveRoom", ({ userId, gpId, userName }) => {
+
+    //Broadcast when user disconnects from chat
+    socket.to(gpId).emit("message", {
+      userId: -1,
+      message: `${userName} has left the chat`,
+      userName: BOTNAME,
+      gpId: -1,
+    });
+    console.log(`${userName} left ${gpId}`);
+    socket.leave(gpId);
+});
 });
 
 sequelize
