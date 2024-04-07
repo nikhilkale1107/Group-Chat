@@ -5,7 +5,8 @@ const fs = require("fs");
 const path = require("path");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const io = require('socket.io')(4000)
+const io = require('socket.io')(4000);
+var CronJob = require("cron").CronJob;
 
 require("dotenv").config();
 
@@ -13,6 +14,7 @@ const sequelize = require("./utils/database");
 
 const { getUserDetails } = require("./utils/user-base");
 const { addChat } = require("./utils/chat-base");
+const { moveChatToArchive } = require("./utils/cron");
 
 const app = express();
 
@@ -74,6 +76,7 @@ const User = require("./models/user");
 const Chat = require("./models/chat");
 const GroupChat = require("./models/groupchat");
 const Admin = require("./models/admin");
+const ArchiveChat = require("./models/archiveChats");
 
 
 //Relationships
@@ -88,6 +91,22 @@ GroupChat.belongsToMany(User, { through: "usergroup" });
 
 GroupChat.hasMany(Admin);
 User.hasMany(Admin);
+
+User.hasMany(ArchiveChat);
+ArchiveChat.belongsTo(User);
+
+GroupChat.hasMany(ArchiveChat);
+ArchiveChat.belongsTo(GroupChat);
+
+// CRON JOB
+const job = new CronJob(
+  "0 0 * * *",
+  moveChatToArchive,
+  null,
+  true,
+  "Asia/Kolkata"
+);
+job.start();
 
 //SOCKET IO LOGIC
 const BOTNAME = "Chat Bot";

@@ -85,6 +85,7 @@ const displayChats = (chat) => {
                     </div>`;
   }
   tableBody.appendChild(li);
+  messageContainer.scrollTop = messageContainer.scrollHeight;
 };
 
 const openGroupChat = async (e) => {
@@ -336,5 +337,4 @@ fileInput.addEventListener("change", (event) => {
 socket.on("message", (data) => {
   // console.log(data);
   displayChats(data);
-  messageContainer.scrollTop = messageContainer.scrollHeight;
 });
