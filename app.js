@@ -1,10 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
-const helmet = require("helmet");
-const morgan = require("morgan");
 const io = require('socket.io')(4000);
 var CronJob = require("cron").CronJob;
 
@@ -27,13 +23,6 @@ const newGroupRouter = require("./routes/newgroup");
 const groupRouter = require("./routes/group");
 const adminRouter = require("./routes/admin");
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
-  {
-    flags: "a",
-  }
-);
-
 //Middlewares
 app.use(
     cors({
@@ -42,27 +31,6 @@ app.use(
     credentials: true,
   }));
 app.use(bodyParser.json());
-app.use(helmet());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'", "data:", "blob:"],
-
-      fontSrc: ["'self'", "https:", "data:"],
-
-      scriptSrc: ["'self'", "unsafe-inline"],
-
-      scriptSrc: ["'self'", "https://*.cloudflare.com"],
-
-      scriptSrcElem: ["'self'", "https:", "https://*.cloudflare.com"],
-
-      styleSrc: ["'self'", "https:", "unsafe-inline"],
-
-      connectSrc: ["'self'", "data", "https://*.cloudflare.com"],
-    },
-  })
-);
-app.use(morgan("common", { stream: accessLogStream }));
 
 //Routes
 app.use("/user", userRouter);
