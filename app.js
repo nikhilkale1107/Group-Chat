@@ -31,7 +31,8 @@ const accessLogStream = fs.createWriteStream(
 //Middlewares
 app.use(
     cors({
-    origin: "http://127.0.0.1:5500",
+    // origin: "http://127.0.0.1:5500",
+    origin: "*",
     credentials: true,
   }));
 app.use(bodyParser.json());

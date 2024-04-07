@@ -8,6 +8,7 @@ const generateToken = (id, userName) => {
 
 exports.postNewUser = async (req, res, next) => {
   const { userName, email, phone, password } = req.body;
+  const t = await sequelize.transaction();
   try {
     const existingUser = await User.findAll({ where: { email: email } });
     console.log(existingUser);
@@ -24,14 +25,21 @@ exports.postNewUser = async (req, res, next) => {
         email: email,
         phone: phone,
         password: hash,
-      });
+      },
+      { transaction: t }
+    );
+      await t.commit();
       res.status(200).json({
         success: true,
         user: user,
       });
     });
   } catch (err) {
+    await t.rollback();
     console.log(err);
+    res.status(500).json({
+      success: false,
+    });
   }
 };
 

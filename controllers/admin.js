@@ -1,17 +1,22 @@
 const Admin = require("../models/admin");
 
 exports.makeAdmin = async (req, res, next) => {
+  const t = await sequelize.transaction();
   const userId = req.query.userId;
   const gpId = req.query.gpId;
   try {
     await Admin.create({
       userId: userId,
       groupchatId: gpId,
-    });
+    },
+    { transaction: t }
+  );
+    await t.commit();
     res.json({
       success: true,
     });
   } catch (error) {
+    await t.rollback();
     console.log(error);
     res.status(500).json({
       success: false,
@@ -22,6 +27,7 @@ exports.makeAdmin = async (req, res, next) => {
 exports.removeAdmin = async (req, res, next) => {
   const gpId = req.query.gpId;
   const userId = req.query.userId;
+  const t = await sequelize.transaction();
 
   try {
     const adminRecord = await Admin.findOne({
@@ -30,11 +36,13 @@ exports.removeAdmin = async (req, res, next) => {
         groupchatId: gpId,
       },
     });
-    await adminRecord.destroy();
+    await adminRecord.destroy({ transaction: t });
+    await t.commit();
     res.json({
       success: true,
     });
   } catch (error) {
+    await t.rollback();
     console.log(error);
     res.status(500).json({
       success: false,
