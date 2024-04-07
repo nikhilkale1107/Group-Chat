@@ -1,4 +1,5 @@
 const baseUrl = "http://localhost:3000";
+const socket = io();
 const form = document.getElementById("send-message");
 const token = localStorage.getItem("token");
 const profile = document.getElementById("profile");
@@ -53,10 +54,10 @@ function parseJwt(token) {
 }
 
 const displayChats = (chat) => {
-  const { message } = chat;
+  const { message, userId, userName } = chat;
   const currentUser = parseJwt(token);
   const trow = document.createElement("tr");
-  if (currentUser.id === chat.userId) {
+  if (currentUser.id === userId) {
     trow.className = "right";
     trow.innerHTML = `<td></td>
                   <td>
@@ -65,7 +66,7 @@ const displayChats = (chat) => {
     `;
   } else {
     trow.innerHTML = `<td>
-                    <span class="others rounded shadow-sm">${chat.user.userName}: ${message}</span>
+                    <span class="others rounded shadow-sm">${userName}: ${message}</span>
                   </td>
                   <td></td>
   `;
@@ -111,6 +112,7 @@ const getGroups = async () => {
 const getChats = async () => {
   tableBody.replaceChildren();
   const gpId = localStorage.getItem("currentGpId");
+  socket.emit("joinRoom", { userId: currentUser.id, gpId: gpId });
   if (gpId) {
     header.style.display = "flex";
     form.style.display = "block";
@@ -132,12 +134,17 @@ const getChats = async () => {
         localMessages = [...chats];
       }
       if (localMessages.length) {
-        localMessages.forEach((chat) => {
-          displayChats(chat);
-        });
         while (localMessages.length > 10) {
           localMessages.shift();
         }
+        localMessages.forEach((chat) => {
+          displayChats({
+            userId: chat.userId,
+            message: chat.message,
+            gpId: chat.groupchatId,
+            userName: chat.user.userName,
+          });
+        });
         localStorage.setItem("messages", JSON.stringify(localMessages));
       } else {
         tableBody.innerHTML = `
@@ -167,22 +174,14 @@ const submitHandler = async (e) => {
   e.preventDefault();
   const gpId = localStorage.getItem("currentGpId");
   const msg = e.target.message;
-  const postMessage = {
-    msg: msg.value,
+  const chat = {
+    userId: currentUser.id,
+    gpId: gpId,
+    message: msg.value,
   };
-  try {
-    const response = await axios.post(
-      `${baseUrl}/chat?gpId=${gpId}`,
-      postMessage,
-      {
-        headers: { Authentication: token },
-      }
-    );
-    console.log(response.data);
-    msg.value = "";
-  } catch (err) {
-    console.log(err);
-  }
+  socket.emit("chatMessage", chat);
+  displayChats(chat);
+  msg.value = "";
 };
 
 form.addEventListener("submit", submitHandler);
@@ -260,5 +259,11 @@ brand.addEventListener("click", () => {
   getChats();
   form.style.display = "none";
 });
-
 // setInterval(getChats, 1000);
+// SOCKET LOGIC
+// const gpId = localStorage.getItem("currentGpId");
+socket.on("message", (data) => {
+  // console.log(data);
+  displayChats(data);
+  messageContainer.scrollTop = messageContainer.scrollHeight;
+});

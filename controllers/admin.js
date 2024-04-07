@@ -1,4 +1,5 @@
 const Admin = require("../models/admin");
+const sequelize = require("../utils/database");
 
 exports.makeAdmin = async (req, res, next) => {
   const t = await sequelize.transaction();

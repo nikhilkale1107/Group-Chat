@@ -5,10 +5,14 @@ const fs = require("fs");
 const path = require("path");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const io = require('socket.io')(4000)
 
 require("dotenv").config();
 
 const sequelize = require("./utils/database");
+
+const { getUserDetails } = require("./utils/user-base");
+const { addChat } = require("./utils/chat-base");
 
 const app = express();
 
@@ -84,6 +88,54 @@ GroupChat.belongsToMany(User, { through: "usergroup" });
 
 GroupChat.hasMany(Admin);
 User.hasMany(Admin);
+
+//SOCKET IO LOGIC
+const BOTNAME = "Chat Bot";
+
+//Run when client connects
+io.on("connection", (socket) => {
+  socket.on("joinRoom", async ({ userId, gpId }) => {
+    console.log("gpId", gpId);
+    const user = await getUserDetails(userId);
+    socket.join(gpId);
+
+    //Welcome current User
+    socket.to(gpId).emit("message", {
+      userId: -1,
+      message: "Welcome to Mchat app",
+      userName: BOTNAME,
+      gpId: -1,
+    });
+
+    //Broadcast when user connects to chat
+    socket.broadcast.to(gpId).emit("message", {
+      userId: -1,
+      message: `${user.userName} has connected to the chat`,
+      userName: BOTNAME,
+      gpId: -1,
+    });
+
+    //Broadcast when user disconnects from chat
+    socket.on("disconnect", () => {
+      socket.to(gpId).emit("message", {
+        userId: -1,
+        message: `${user.userName} has left the chat`,
+        userName: BOTNAME,
+        gpId: -1,
+      });
+    });
+  });
+
+  socket.on("chatMessage", async (data) => {
+    // console.log(data);
+    const [formattedData] = await Promise.all([
+      getUserDetails(data.userId, data.message),
+      addChat(data.gpId, data.message, data.userId),
+    ]);
+    console.log(formattedData);
+    socket.broadcast.to(data.gpId).emit("message", formattedData);
+  });
+});
 
 sequelize
   .sync({ force: false })

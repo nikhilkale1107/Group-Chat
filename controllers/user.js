@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const sequelize = require("../utils/database");
 
 const generateToken = (id, userName) => {
   return jwt.sign({ id: id, userName: userName }, process.env.TOKEN_SECRET);
